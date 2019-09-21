@@ -345,10 +345,10 @@ module AS_Extensions
               p r  # ... Also return result to console
               # ... Format for HTML box
               r.gsub!(/ /, "&nbsp;")
-              r.gsub!(/\n/, "<br>")
               r.gsub!(/'/, "&rsquo;")
               r.gsub!(/`/, "&lsquo;")
               r.gsub!(/</, "&lt;")
+              r.gsub!(/\\n/, "<br>")
 
               # Provide some status text and return result
               dlg.execute_script("addResults('Done running code. Ruby says: <span class=\\'hl\\'>#{r}</span>')")
