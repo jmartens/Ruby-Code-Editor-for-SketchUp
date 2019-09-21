@@ -330,7 +330,7 @@ module AS_Extensions
               # ... Wrap everything in single undo if desired
               Sketchup.active_model.start_operation "RCE Code Run" if params == 'true'
               begin  # ... Evaluation under the top level binding
-                r = eval( v , TOPLEVEL_BINDING )
+                eval( v , TOPLEVEL_BINDING )
               rescue => e
                 r = e  # ... could do: e.backtrace.join('\n')
                 raise  # ... Pass to outer rescue clause if error
