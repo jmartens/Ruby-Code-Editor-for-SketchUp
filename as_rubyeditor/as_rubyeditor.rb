@@ -17,7 +17,25 @@ module AS_Extensions
 
   module AS_RubyEditor
 
+    # Utility method to mute Ruby warnings for whatever is executed by the block.
+    def self.mute_warnings(&block)
+      old_verbose = $VERBOSE
+      $VERBOSE = nil
+      result = block.call
+    ensure
+      $VERBOSE = old_verbose
+      result
+    end
 
+    # Utility method to quickly reload the tutorial files. Useful for development.
+    #
+    # @return [Integer] Number of files reloaded.
+    def self.reload
+      self.mute_warnings do
+        load __FILE__
+      end
+    end
+  
     # Creates new class
     class RubyEditor < UI::WebDialog
 
