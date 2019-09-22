@@ -33,6 +33,15 @@ textarea{overflow:auto;}
 .cm-rb-su-method {color:#fb0;}
 #autoplete_txt{font-family:Consolas,Monaco,Menlo,"Andale Mono","lucida console","Courier New",monospace;font-size:10pt;width:200px;}
 
+.cm-error-line {
+  font-style: italic;
+  font-weight: bolder;
+  border: 1px solid rgb(255, 0, 0) !important; /* Browsers that do not support opacity */
+  border: 1px solid rgba(255, 63, 0, .5) !important; /* Browsers that do support opacity */
+  -webkit-background-clip: padding-box; /* for Safari */
+  background-clip: padding-box; /* for IE9+, Firefox 4+, Opera, Chrome */
+}
+
 /* Menu */
 #nav {height:30px;background:inherit;}
 #menu.ui-menu a {display:block; text-decoration:none; font-weight:bold;}

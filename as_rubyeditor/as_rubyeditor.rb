@@ -329,6 +329,13 @@ module AS_Extensions
             begin
               # ... Wrap everything in single undo if desired
               Sketchup.active_model.start_operation "RCE Code Run" if params == 'true'
+
+              # Undo error highlight
+              script = "editor.getDoc().eachLine(function(ln) {
+                editor.removeLineClass(ln, \"text\", \"cm-error-line\")
+              })"
+              dlg.execute_script(script)
+
               eval( v , TOPLEVEL_BINDING )
             rescue ScriptError, StandardError => e# ... If error
               Sketchup.active_model.abort_operation
@@ -342,6 +349,9 @@ module AS_Extensions
               stack.delete_if { |frame| libraries_to_remove.any? { |library| frame.include?(library) } }
               # Extract line number from top frame in stack
               line_no = stack[0].split(':')[1].to_i
+              # Highlight error line in script
+              script = "editor.addLineClass(#{line_no}, \"text\", \"cm-error-line\");"
+              dlg.execute_script(script)
 
             else  # ... Commit process if no errors
               Sketchup.active_model.commit_operation if params == 'true'
