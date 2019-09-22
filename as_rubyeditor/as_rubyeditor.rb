@@ -330,10 +330,7 @@ module AS_Extensions
               # ... Wrap everything in single undo if desired
               Sketchup.active_model.start_operation "RCE Code Run" if params == 'true'
               eval( v , TOPLEVEL_BINDING )
-            rescue ScriptError => e
-              Sketchup.active_model.abort_operation
-              reason = e.to_s  # ... could do: e.backtrace.join('\n')
-            rescue  StandardError => e# ... If error
+            rescue ScriptError, StandardError => e# ... If error
               Sketchup.active_model.abort_operation
               reason = 'Run aborted. Error: ' + e.to_s
             else  # ... Commit process if no errors
