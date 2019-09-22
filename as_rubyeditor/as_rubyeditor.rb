@@ -329,29 +329,28 @@ module AS_Extensions
             begin
               # ... Wrap everything in single undo if desired
               Sketchup.active_model.start_operation "RCE Code Run" if params == 'true'
-              begin  # ... Evaluation under the top level binding
-                eval( v , TOPLEVEL_BINDING )
-              rescue => e
-                r = e  # ... could do: e.backtrace.join('\n')
-                raise  # ... Pass to outer rescue clause if error
-              end
-            rescue  # ... If error
+              eval( v , TOPLEVEL_BINDING )
+            rescue ScriptError => e
               Sketchup.active_model.abort_operation
-              r = 'Run aborted. Error: ' + e
+              r = e.to_s  # ... could do: e.backtrace.join('\n')
+            rescue  StandardError => e# ... If error
+              Sketchup.active_model.abort_operation
+              r = 'Run aborted. Error: ' + e.to_s
             else  # ... Commit process if no errors
               Sketchup.active_model.commit_operation if params == 'true'
             ensure  # ... Always do this
-              r === nil ? r='Nil result (no result returned or run failed)' : r = r.to_s
-              p r  # ... Also return result to console
-              # ... Format for HTML box
-              r.gsub!(/ /, "&nbsp;")
-              r.gsub!(/'/, "&rsquo;")
-              r.gsub!(/`/, "&lsquo;")
-              r.gsub!(/</, "&lt;")
-              r.gsub!(/\\n/, "<br>")
+              unless r.nil?
+                p r  # ... Also return result to console
+                # ... Format for HTML box
+                r.gsub!(/ /, "&nbsp;")
+                r.gsub!(/'/, "&rsquo;")
+                r.gsub!(/`/, "&lsquo;")
+                r.gsub!(/</, "&lt;")
+                r.gsub!(/\\n/, "<br>")
 
-              # Provide some status text and return result
-              dlg.execute_script("addResults('Done running code. Ruby says: <span class=\\'hl\\'>#{r}</span>')")
+                # Provide some status text and return result
+                dlg.execute_script("addResults('Done running code. Ruby says: <span class=\\'hl\\'>#{r}</span>')")
+              end
               Sketchup.status_text = "#{AS_RubyEditor::EXTTITLE} | Done running code"
 
             end
