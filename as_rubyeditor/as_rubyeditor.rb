@@ -332,24 +332,25 @@ module AS_Extensions
               eval( v , TOPLEVEL_BINDING )
             rescue ScriptError, StandardError => e# ... If error
               Sketchup.active_model.abort_operation
-              reason = 'Run aborted. Error: ' + e.to_s
+              result = 'An error occurred'
+              reason = e.to_s
             else  # ... Commit process if no errors
               Sketchup.active_model.commit_operation if params == 'true'
+              result = 'Successfully ran code'
             ensure  # ... Always do this
+              # Provide some status text and return result              
+              Sketchup.status_text = "#{AS_RubyEditor::EXTTITLE} | #{result}"
+              p result
               unless reason.nil?
-                p reason  # ... Also return result to console
+                p reason  # ... Also return reason to console
                 # ... Format for HTML box
                 reason.gsub!(/ /, "&nbsp;")
                 reason.gsub!(/'/, "&rsquo;")
                 reason.gsub!(/`/, "&lsquo;")
                 reason.gsub!(/</, "&lt;")
                 reason.gsub!(/\\n/, "<br>")
-
-                # Provide some status text and return result
-                dlg.execute_script("addResults('Done running code. Ruby says: <span class=\\'hl\\'>#{reason}</span>')")
               end
-                Sketchup.status_text = "#{AS_RubyEditor::EXTTITLE} | Done running code"
-
+              dlg.execute_script("addResults('<span class=\\'hl\\'>#{result}" + (reason.nil? ? "" : ": #{reason}") + "</span>')")
             end
 
           end  # add_action_callback("exec")
