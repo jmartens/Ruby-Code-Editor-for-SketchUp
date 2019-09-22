@@ -97,6 +97,30 @@ module AS_Extensions
 
           ## =====================
 
+          ## Sanitize text to safely display in results panel
+
+          def html_safe(text)
+            # Escape basic HTML unsafe characters
+            text.gsub!(/&/, "&apos;")
+            text.gsub!(/</, "&lt;")
+            text.gsub!(/>/, "&gt;")
+            text.gsub!(/"/, "&quot;")
+      
+            # Escape additional problemtic characters
+            text.gsub!(/'/, "&rsquo;")
+            text.gsub!(/`/, "&lsquo;")
+      
+            # Replace spaces by &nbsp; as well
+            text.gsub!(/ /, "&nbsp;")
+
+            # Make sure to replace newlines with <br> last to prevent escaping
+            text.gsub!(/\\n/, "<br>")
+      
+            return text
+          end
+    
+          ## =====================
+  
           ## Callback to CLEAR (NEW) editor
 
           add_action_callback("new") do |dlg, params|
@@ -362,12 +386,8 @@ module AS_Extensions
               p result
               unless reason.nil?
                 p reason  # ... Also return reason to console
-                # ... Format for HTML box
-                reason.gsub!(/ /, "&nbsp;")
-                reason.gsub!(/'/, "&rsquo;")
-                reason.gsub!(/`/, "&lsquo;")
-                reason.gsub!(/</, "&lt;")
-                reason.gsub!(/\\n/, "<br>")
+                # Escape default HTML unsafe characters
+                reason = dlg.html_safe(reason)
               end
               dlg.execute_script("addResults('<span class=\\'hl\\'>#{result}" + (reason.nil? ? "" : ": #{reason}") + "</span>')")
             end
