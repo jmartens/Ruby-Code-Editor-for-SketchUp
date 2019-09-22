@@ -334,6 +334,15 @@ module AS_Extensions
               Sketchup.active_model.abort_operation
               result = 'An error occurred'
               reason = e.to_s
+
+              # Retrieve line number for error
+              stack = e.backtrace
+              # Process stack to remove outer levels caused by invocation routines
+              libraries_to_remove = ['SketchUp', __FILE__ ]
+              stack.delete_if { |frame| libraries_to_remove.any? { |library| frame.include?(library) } }
+              # Extract line number from top frame in stack
+              line_no = stack[0].split(':')[1].to_i
+
             else  # ... Commit process if no errors
               Sketchup.active_model.commit_operation if params == 'true'
               result = 'Successfully ran code'
