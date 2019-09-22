@@ -325,33 +325,33 @@ module AS_Extensions
             v.force_encoding('UTF-8') if v.respond_to?(:force_encoding)
 
             # Execute the code with eval and rescue if error
-            r = nil
+            reason = nil
             begin
               # ... Wrap everything in single undo if desired
               Sketchup.active_model.start_operation "RCE Code Run" if params == 'true'
               eval( v , TOPLEVEL_BINDING )
             rescue ScriptError => e
               Sketchup.active_model.abort_operation
-              r = e.to_s  # ... could do: e.backtrace.join('\n')
+              reason = e.to_s  # ... could do: e.backtrace.join('\n')
             rescue  StandardError => e# ... If error
               Sketchup.active_model.abort_operation
-              r = 'Run aborted. Error: ' + e.to_s
+              reason = 'Run aborted. Error: ' + e.to_s
             else  # ... Commit process if no errors
               Sketchup.active_model.commit_operation if params == 'true'
             ensure  # ... Always do this
-              unless r.nil?
-                p r  # ... Also return result to console
+              unless reason.nil?
+                p reason  # ... Also return result to console
                 # ... Format for HTML box
-                r.gsub!(/ /, "&nbsp;")
-                r.gsub!(/'/, "&rsquo;")
-                r.gsub!(/`/, "&lsquo;")
-                r.gsub!(/</, "&lt;")
-                r.gsub!(/\\n/, "<br>")
+                reason.gsub!(/ /, "&nbsp;")
+                reason.gsub!(/'/, "&rsquo;")
+                reason.gsub!(/`/, "&lsquo;")
+                reason.gsub!(/</, "&lt;")
+                reason.gsub!(/\\n/, "<br>")
 
                 # Provide some status text and return result
-                dlg.execute_script("addResults('Done running code. Ruby says: <span class=\\'hl\\'>#{r}</span>')")
+                dlg.execute_script("addResults('Done running code. Ruby says: <span class=\\'hl\\'>#{reason}</span>')")
               end
-              Sketchup.status_text = "#{AS_RubyEditor::EXTTITLE} | Done running code"
+                Sketchup.status_text = "#{AS_RubyEditor::EXTTITLE} | Done running code"
 
             end
 
